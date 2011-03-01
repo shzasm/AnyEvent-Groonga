@@ -1,7 +1,10 @@
 Revision history for Perl extension AnyEvent::Groonga
 
-0.02    2011/3/1 
+0.03    2011/3/1 
         - add a test directory 't/data'
+
+0.02    2011/3/1 
+        - 
 
 0.01    2011/2/28
         - original version

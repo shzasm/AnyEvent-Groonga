@@ -14,7 +14,7 @@ use Try::Tiny;
 use Encode;
 use base qw(Class::Accessor::Fast);
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 __PACKAGE__->mk_accessors($_)
     for qw( protocol host port groonga_path database_path command_list );
