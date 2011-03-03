@@ -3,6 +3,7 @@ use strict;
 use warnings;
 use base qw( Class::Accessor::Fast );
 use AnyEvent::Groonga::Result::Select;
+use Data::Dumper;
 use Encode;
 
 __PACKAGE__->mk_accessors($_)

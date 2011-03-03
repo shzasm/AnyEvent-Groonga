@@ -9,12 +9,13 @@ use AnyEvent::Groonga::Result;
 use File::Which qw(which);
 use List::MoreUtils qw(any);
 use URI;
+use URI::Escape;
 use JSON;
 use Try::Tiny;
 use Encode;
 use base qw(Class::Accessor::Fast);
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 __PACKAGE__->mk_accessors($_)
     for qw( protocol host port groonga_path database_path command_list );
@@ -142,7 +143,9 @@ sub _post_to_gqtp_server {
             my $json = $stdout;
             my $result;
             try {
-                my $data = JSON->new->utf8(0)->decode($json);
+                my $data = JSON->new->latin1->decode($json);
+
+                #my $data = JSON->new->utf8(0)->decode($json);
                 $result = AnyEvent::Groonga::Result->new(
                     posted_command => $command,
                     data           => $data
@@ -186,10 +189,12 @@ sub _generate_groonga_url {
         elsif ( ref $value eq 'ARRAY' ) {
             $value = join( ",", @$value );
         }
+        $key   = uri_escape($key);
+        $value = uri_escape($value);
         push @array, $key . '=' . $value;
     }
     $uri->query( join( "&", @array ) );
-
+    print $uri->as_string, "\n";
     return $uri->as_string;
 }
 
@@ -217,7 +222,7 @@ sub _generate_groonga_command {
             $value = $self->_load_filter($value);
         }
         elsif ( $command eq 'select' && $key eq 'query' ) {
-			$value = $self->_select_filter($value);
+            $value = $self->_select_filter($value);
         }
         elsif ( ref $value eq 'ARRAY' ) {
             $value = join( ",", @$value );
@@ -240,13 +245,12 @@ sub _load_filter {
     my $self = shift;
     my $data = shift;
     my $json = JSON->new->latin1->encode($data);
-    $json =~ s/"/\\"/g;
-    if ( ref $data eq 'ARRAY' ) {
-        return '\'' . $json . '\'';
+    $json =~ s/"/\\"/g if $self->protocol ne 'http';
+    if ( ref $data ne 'ARRAY' ) {
+        $json = '[' . $json . ']';
     }
-    else {
-        return '\'[' . $json . ']\'';
-    }
+    $json = '\'' . $json . '\'' if $self->protocol ne 'http';
+    return $json;
 }
 
 1;

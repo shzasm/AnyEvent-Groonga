@@ -11,27 +11,31 @@ sub hit_num {
 
 sub columns {
     my $self = shift;
-    my @cols;
-    for ( @{ $self->body->[0]->[1] } ) {
-        push @cols, $_->[0];
-    }
+    my @cols = ();
+	if (ref $self->body eq 'ARRAY') {
+		for ( @{ $self->body->[0]->[1] } ) {
+			push @cols, $_->[0];
+		}
+	}
     return \@cols;
 }
 
 sub items {
     my $self = shift;
     my $cols = $self->columns;
-    my @item_array;
-    for my $i ( 2 .. int @{ $self->body->[0] } - 1 ) {
-        my $row = $self->body->[0]->[$i];
-        my $item;
-        for my $j ( 0 .. int @$cols - 1 ) {
-            my $key   = $cols->[$j];
-            my $value = $row->[$j];
-            $item->{$key} = $value;
-        }
-        push @item_array, $item;
-    }
+    my @item_array = ();
+	if (ref $self->body eq 'ARRAY') {
+		for my $i ( 2 .. int @{ $self->body->[0] } - 1 ) {
+			my $row = $self->body->[0]->[$i];
+			my $item;
+			for my $j ( 0 .. int @$cols - 1 ) {
+				my $key   = $cols->[$j];
+				my $value = $row->[$j];
+				$item->{$key} = $value;
+			}
+			push @item_array, $item;
+		}
+	}
     return \@item_array;
 }
 

@@ -422,7 +422,6 @@ is_deeply(
     ]
 );
 
-_cleanup();
 
 sub _cleanup {
     my @files = glob( File::Spec->catfile( $FindBin::RealBin, "data", "*" ) );

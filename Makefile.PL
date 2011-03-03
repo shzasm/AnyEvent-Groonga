@@ -8,6 +8,7 @@ requires 'AnyEvent::HTTP';
 requires 'File::Which';
 requires 'List::MoreUtils';
 requires 'URI';
+requires 'URI::Escape';
 requires 'JSON';
 requires 'Try::Tiny';
 requires 'Encode';

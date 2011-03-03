@@ -1,5 +1,9 @@
 Revision history for Perl extension AnyEvent::Groonga
 
+0.04    2011/3/3
+        - fix a bug on AnyEvent::Groonga::Result::Select
+		- when use the load commnad with http mode, it had some bugs
+
 0.03    2011/3/1 
         - add a test directory 't/data'
 
