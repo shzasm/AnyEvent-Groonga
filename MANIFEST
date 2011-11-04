@@ -9,7 +9,6 @@ inc/Module/Install/Fetch.pm
 inc/Module/Install/Include.pm
 inc/Module/Install/Makefile.pm
 inc/Module/Install/Metadata.pm
-inc/Module/Install/Repository.pm
 inc/Module/Install/Win32.pm
 inc/Module/Install/WriteAll.pm
 inc/Test/More.pm
@@ -26,6 +25,12 @@ t/02_method.t
 t/03_error.t
 t/04_tut.t
 t/data/test.db
+t/data/test.db.0000000
+t/data/test.db.0000100
+t/data/test.db.0000101
+t/data/test.db.0000102
+t/data/test.db.0000103
+t/data/test.db.0000103.c
 xt/01_podspell.t
 xt/02_perlcritic.t
 xt/03_pod.t

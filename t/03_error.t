@@ -19,7 +19,7 @@ use Try::Tiny;
 
 {
     my $g = AnyEvent::Groonga->new;
-	$g->protocol("local_db");
+    $g->protocol("local_db");
     $g->groonga_path("dummy");
     try {
         my $result
@@ -33,7 +33,7 @@ use Try::Tiny;
 
 {
     my $g = AnyEvent::Groonga->new;
-	$g->protocol("dummy");
+    $g->protocol("dummy");
     try {
         my $result
             = $g->call( select => { table => "test", query => "something" } )
@@ -46,10 +46,9 @@ use Try::Tiny;
 
 {
     my $g = AnyEvent::Groonga->new;
-	$g->protocol("http");
+    $g->protocol("http");
     try {
-        my $result
-            = $g->call( dummy => {})->recv;
+        my $result = $g->call( dummy => {} )->recv;
     }
     catch {
         like( $_, qr/dummy is not supported command/ );

@@ -4,7 +4,7 @@ package File::Spec;
 use strict;
 use vars qw(@ISA $VERSION);
 
-$VERSION = '3.30';
+$VERSION = '3.33';
 $VERSION = eval $VERSION;
 
 my %module = (MacOS   => 'Mac',
@@ -27,4 +27,4 @@ require "File/Spec/$module.pm";
 
 __END__
 
-#line 336
+#line 337

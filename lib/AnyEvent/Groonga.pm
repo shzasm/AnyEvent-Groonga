@@ -15,10 +15,10 @@ use Try::Tiny;
 use Encode;
 use base qw(Class::Accessor::Fast);
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 __PACKAGE__->mk_accessors($_)
-    for qw( protocol host port groonga_path database_path command_list );
+    for qw( protocol host port groonga_path database_path command_list debug);
 
 sub new {
     my $class = shift;
@@ -221,7 +221,17 @@ sub _generate_groonga_command {
         if ( $command eq 'load' && $key eq 'values' ) {
             $value = $self->_load_filter($value);
         }
-        elsif ( $command eq 'select' && $key eq 'query' ) {
+        elsif (
+            $command eq 'select'
+            && (   $key eq 'query'
+                || $key eq 'filter'
+                || $key eq 'sortby'
+                || $key eq 'scorer' )
+            )
+        {
+            if ( ref $value eq 'ARRAY' ) {
+                $value = join( ",", @$value );
+            }
             $value = $self->_select_filter($value);
         }
         elsif ( ref $value eq 'ARRAY' ) {
@@ -231,6 +241,7 @@ sub _generate_groonga_command {
         push @array, ( $key, $value );
     }
     $groonga_command .= join( " ", @array ) . '"';
+    warn($groonga_command) if $self->debug;
     return $groonga_command;
 }
 
@@ -238,6 +249,8 @@ sub _select_filter {
     my $self = shift;
     my $data = shift;
     $data = decode( "utf8", $data ) unless utf8::is_utf8($data);
+    $data =~ s/(^|[^\\])"|'/\\"/g;
+
     return '\'' . $data . '\'';
 }
 

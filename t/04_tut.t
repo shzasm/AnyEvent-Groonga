@@ -1,5 +1,6 @@
 use strict;
 use warnings;
+use lib '../lib';
 use AnyEvent::Groonga;
 use Test::More;
 use FindBin;
@@ -7,16 +8,16 @@ use File::Spec;
 
 _cleanup();
 
-my $g            = AnyEvent::Groonga->new;
+my $g = AnyEvent::Groonga->new( debug => 0 );
 my $groonga_path = $g->groonga_path;
 my $test_database_path
     = File::Spec->catfile( $FindBin::RealBin, "data", "test.db" );
 
-unless ($groonga_path and -e $groonga_path) {
-	plan skip_all => "groonga is not installed.";
+unless ( $groonga_path and -e $groonga_path ) {
+    plan skip_all => "groonga is not installed.";
 }
-else{
-	plan tests => 20;
+else {
+    plan tests => 21;
 }
 
 `$groonga_path -n $test_database_path quit`;
@@ -422,6 +423,33 @@ is_deeply(
     ]
 );
 
+# filter test.
+$result = $g->call(
+    select => {
+        table          => "Site",
+        query          => 'title:@test',
+        filter         => '_id > 1 && _id < 5',
+        output_columns => [qw(_id _score title)],
+        sortby         => [qw(_score _id)],
+    }
+)->recv;
+
+is_deeply(
+    $result->items,
+    [   {   '_score' => 3,
+            '_id'    => 2,
+            'title'  => 'test record 2.'
+        },
+        {   '_score' => 3,
+            '_id'    => 4,
+            'title'  => 'test record four.'
+        },
+        {   '_score' => 4,
+            '_id'    => 3,
+            'title'  => 'test test record three.'
+        }
+    ]
+);
 
 sub _cleanup {
     my @files = glob( File::Spec->catfile( $FindBin::RealBin, "data", "*" ) );

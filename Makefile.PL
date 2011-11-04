@@ -21,6 +21,5 @@ test_requires 'Test::More';
 test_requires 'FindBin';
 test_requires 'File::Spec';
 
-auto_set_repository;
 auto_include;
 WriteAll;
