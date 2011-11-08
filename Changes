@@ -1,6 +1,9 @@
 Revision history for Perl extension AnyEvent::Groonga
 
 
+0.06    2011/11/8
+        - fix a syntax error as 'filter' option was used.
+
 0.05    2011/11/3
         - fix a syntax error as 'filter' option was used.
         - add a test

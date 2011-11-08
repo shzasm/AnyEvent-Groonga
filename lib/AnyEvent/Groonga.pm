@@ -15,7 +15,7 @@ use Try::Tiny;
 use Encode;
 use base qw(Class::Accessor::Fast);
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 __PACKAGE__->mk_accessors($_)
     for qw( protocol host port groonga_path database_path command_list debug);
@@ -65,6 +65,8 @@ sub call {
     my $self     = shift;
     my $command  = shift;
     my $args_ref = shift;
+    use Data::Dumper;
+    print Dumper $args_ref;
 
     croak( $command . " is not supported command" )
         unless any { $command eq $_ } @{ $self->{command_list} };
@@ -180,6 +182,8 @@ sub _generate_groonga_url {
     $uri->host( $self->host );
     $uri->port( $self->port );
     $uri->path( "d/" . $command );
+    use Data::Dumper;
+    print Dumper $args_ref;
 
     my @array;
     while ( my ( $key, $value ) = each %$args_ref ) {
@@ -249,8 +253,13 @@ sub _select_filter {
     my $self = shift;
     my $data = shift;
     $data = decode( "utf8", $data ) unless utf8::is_utf8($data);
-    $data =~ s/(^|[^\\])"|'/\\"/g;
-
+    $data =~ /(^|[^\\])"|'/;
+    if ($1) {
+        $data =~ s/(^|[^\\])"|'/$1\\"/g;
+    }
+    else {
+        $data =~ s/(^|[^\\])"|'/\\"/g;
+    }
     return '\'' . $data . '\'';
 }
 
