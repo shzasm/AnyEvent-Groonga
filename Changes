@@ -1,5 +1,8 @@
 Revision history for Perl extension AnyEvent::Groonga
 
+0.07    2011/11/18
+        - remove some debug code.
+        - add timeout option
 
 0.06    2011/11/8
         - fix a syntax error as 'filter' option was used.

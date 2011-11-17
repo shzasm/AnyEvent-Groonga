@@ -6,8 +6,7 @@ use AnyEvent::Groonga::Result::Select;
 use Data::Dumper;
 use Encode;
 
-__PACKAGE__->mk_accessors($_)
-    for qw( data status start_time elapsed body posted_command );
+__PACKAGE__->mk_accessors($_) for qw( data posted_command );
 
 sub new {
     my $class = shift;

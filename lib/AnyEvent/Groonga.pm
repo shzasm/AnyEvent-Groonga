@@ -15,7 +15,7 @@ use Try::Tiny;
 use Encode;
 use base qw(Class::Accessor::Fast);
 
-our $VERSION = '0.06';
+our $VERSION = '0.07';
 
 __PACKAGE__->mk_accessors($_)
     for qw( protocol host port groonga_path database_path command_list debug);
@@ -65,8 +65,6 @@ sub call {
     my $self     = shift;
     my $command  = shift;
     my $args_ref = shift;
-    use Data::Dumper;
-    print Dumper $args_ref;
 
     croak( $command . " is not supported command" )
         unless any { $command eq $_ } @{ $self->{command_list} };
@@ -95,6 +93,23 @@ sub call {
     }
 }
 
+sub _set_timeout {
+    my $self    = shift;
+    my $cv      = shift;
+    my $timeout = shift;
+    AnyEvent->now_update;
+    my $timer;
+    $timer = AnyEvent->timer(
+        after => $timeout,
+        cb    => sub {
+            my $data = [ [ 0, undef, undef, ], ['timeout'] ];
+            my $result = AnyEvent::Groonga::Result->new( data => $data );
+            $cv->send($result);
+            undef $timer;
+        },
+    );
+}
+
 sub _post_to_http_server {
     my $self     = shift;
     my $command  = shift;
@@ -103,6 +118,8 @@ sub _post_to_http_server {
     my $url = $self->_generate_groonga_url( $command, $args_ref );
 
     my $cv = AnyEvent->condvar;
+
+    $self->_set_timeout( $cv, $args_ref->{timeout} ) if $args_ref->{timeout};
 
     http_get(
         $url,
@@ -135,6 +152,8 @@ sub _post_to_gqtp_server {
         = $self->_generate_groonga_command( $command, $args_ref );
 
     my $cv = AnyEvent->condvar;
+
+    $self->_set_timeout( $cv, $args_ref->{timeout} ) if $args_ref->{timeout};
 
     my $cmd_cv = run_cmd $groonga_command,
         '>'  => \my $stdout,
@@ -182,8 +201,6 @@ sub _generate_groonga_url {
     $uri->host( $self->host );
     $uri->port( $self->port );
     $uri->path( "d/" . $command );
-    use Data::Dumper;
-    print Dumper $args_ref;
 
     my @array;
     while ( my ( $key, $value ) = each %$args_ref ) {
@@ -198,7 +215,7 @@ sub _generate_groonga_url {
         push @array, $key . '=' . $value;
     }
     $uri->query( join( "&", @array ) );
-    print $uri->as_string, "\n";
+
     return $uri->as_string;
 }
 
