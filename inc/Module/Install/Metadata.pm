@@ -6,7 +6,7 @@ use Module::Install::Base ();
 
 use vars qw{$VERSION @ISA $ISCORE};
 BEGIN {
-	$VERSION = '1.02';
+	$VERSION = '1.00';
 	@ISA     = 'Module::Install::Base';
 	$ISCORE  = 1;
 }
@@ -170,7 +170,7 @@ sub perl_version {
 	# Normalize the version
 	$version = $self->_perl_version($version);
 
-	# We don't support the really old versions
+	# We don't support the reall old versions
 	unless ( $version >= 5.005 ) {
 		die "Module::Install only supports 5.005 or newer (use ExtUtils::MakeMaker)\n";
 	}
@@ -515,7 +515,6 @@ sub __extract_license {
 		'GNU Free Documentation license'     => 'unrestricted', 1,
 		'GNU Affero General Public License'  => 'open_source',  1,
 		'(?:Free)?BSD license'               => 'bsd',          1,
-		'Artistic license 2\.0'              => 'artistic_2',   1,
 		'Artistic license'                   => 'artistic',     1,
 		'Apache (?:Software )?license'       => 'apache',       1,
 		'GPL'                                => 'gpl',          1,
@@ -551,9 +550,9 @@ sub license_from {
 
 sub _extract_bugtracker {
 	my @links   = $_[0] =~ m#L<(
-	 https?\Q://rt.cpan.org/\E[^>]+|
-	 https?\Q://github.com/\E[\w_]+/[\w_]+/issues|
-	 https?\Q://code.google.com/p/\E[\w_\-]+/issues/list
+	 \Qhttp://rt.cpan.org/\E[^>]+|
+	 \Qhttp://github.com/\E[\w_]+/[\w_]+/issues|
+	 \Qhttp://code.google.com/p/\E[\w_\-]+/issues/list
 	 )>#gx;
 	my %links;
 	@links{@links}=();
@@ -582,7 +581,7 @@ sub bugtracker_from {
 sub requires_from {
 	my $self     = shift;
 	my $content  = Module::Install::_readperl($_[0]);
-	my @requires = $content =~ m/^use\s+([^\W\d]\w*(?:::\w+)*)\s+(v?[\d\.]+)/mg;
+	my @requires = $content =~ m/^use\s+([^\W\d]\w*(?:::\w+)*)\s+([\d\.]+)/mg;
 	while ( @requires ) {
 		my $module  = shift @requires;
 		my $version = shift @requires;

@@ -1,5 +1,8 @@
 Revision history for Perl extension AnyEvent::Groonga
 
+0.08    2012/07/04
+        - patched some bugs and add 1 test ( it was given from SATOH.Koichi )
+
 0.07    2011/11/18
         - remove some debug code.
         - add timeout option

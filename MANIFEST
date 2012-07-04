@@ -24,6 +24,7 @@ t/01_basic.t
 t/02_method.t
 t/03_error.t
 t/04_tut.t
+t/05_regression.t
 t/data/test.db
 t/data/test.db.0000000
 t/data/test.db.0000100

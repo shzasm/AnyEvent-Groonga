@@ -15,7 +15,7 @@ use Try::Tiny;
 use Encode;
 use base qw(Class::Accessor::Fast);
 
-our $VERSION = '0.07';
+our $VERSION = '0.08';
 
 __PACKAGE__->mk_accessors($_)
     for qw( protocol host port groonga_path database_path command_list debug);
@@ -127,7 +127,7 @@ sub _post_to_http_server {
             my $json = shift;
             my $result;
             try {
-                my $data = JSON->new->utf8(0)->decode($json);
+                my $data = JSON->new->utf8->decode($json);
                 $result = AnyEvent::Groonga::Result->new(
                     posted_command => $command,
                     data           => $data
@@ -164,9 +164,7 @@ sub _post_to_gqtp_server {
             my $json = $stdout;
             my $result;
             try {
-                my $data = JSON->new->latin1->decode($json);
-
-                #my $data = JSON->new->utf8(0)->decode($json);
+                my $data = JSON->new->utf8->decode($json);
                 $result = AnyEvent::Groonga::Result->new(
                     posted_command => $command,
                     data           => $data
@@ -284,7 +282,11 @@ sub _load_filter {
     my $self = shift;
     my $data = shift;
     my $json = JSON->new->latin1->encode($data);
-    $json =~ s/"/\\"/g if $self->protocol ne 'http';
+    if ( $self->protocol ne 'http' ) {
+        $json =~ s/\\/\\\\\\\\/g;
+        $json =~ s/'/\\'/g;
+        $json =~ s/"/\\"/g;
+    }
     if ( ref $data ne 'ARRAY' ) {
         $json = '[' . $json . ']';
     }
