@@ -15,7 +15,7 @@ use Try::Tiny;
 use Encode;
 use base qw(Class::Accessor::Fast);
 
-our $VERSION = '0.08';
+our $VERSION = '0.09';
 
 __PACKAGE__->mk_accessors($_)
     for qw( protocol host port groonga_path database_path command_list debug);
@@ -286,6 +286,7 @@ sub _load_filter {
         $json =~ s/\\/\\\\\\\\/g;
         $json =~ s/'/\\'/g;
         $json =~ s/"/\\"/g;
+        $json =~ s/`/\\`/g;
     }
     if ( ref $data ne 'ARRAY' ) {
         $json = '[' . $json . ']';

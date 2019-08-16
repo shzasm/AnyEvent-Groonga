@@ -5,6 +5,7 @@ use AnyEvent::Groonga;
 use Test::More;
 use FindBin;
 use File::Spec;
+use File::Basename qw( dirname );
 
 _cleanup();
 
@@ -18,6 +19,11 @@ unless ( $groonga_path and -e $groonga_path ) {
 }
 else {
     plan tests => 21;
+}
+
+# create data directory.
+unless( -d dirname($test_database_path) ) {
+    mkdir( dirname($test_database_path) ) or die "can't create the data directory for groonga";
 }
 
 `$groonga_path -n $test_database_path quit`;
@@ -40,7 +46,8 @@ $result = $g->call(
     }
 )->recv;
 
-is( $result->body, "true" );
+# return 1 on groonga version 9.0.0.
+like( $result->body, qr/true|1/ );
 
 # select
 $result = $g->call( select => { table => "Site" } )->recv;
@@ -58,7 +65,7 @@ $result = $g->call(
     }
 )->recv;
 
-is( $result->body, "true" );
+like( $result->body, qr/true|1/ );
 
 # table_create Terms
 $result = $g->call(
@@ -70,7 +77,7 @@ $result = $g->call(
     }
 )->recv;
 
-is( $result->body, "true" );
+like( $result->body, qr/true|1/ );
 
 # column_create Terms
 $result = $g->call(
@@ -83,7 +90,7 @@ $result = $g->call(
     }
 )->recv;
 
-is( $result->body, "true" );
+like( $result->body, qr/true|1/ );
 
 # load
 my $data = [

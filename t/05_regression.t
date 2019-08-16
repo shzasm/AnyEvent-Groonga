@@ -6,6 +6,7 @@ use AnyEvent::Groonga;
 use Test::More;
 use FindBin;
 use File::Spec;
+use File::Basename qw(dirname);
 
 unlink $_ for glob( File::Spec->catfile( $FindBin::RealBin, "data", "*") );
 
@@ -19,6 +20,11 @@ unless ( $groonga_path and -e $groonga_path ) {
 }
 else{
     plan tests => 2;
+}
+
+# create data directory.
+unless( -d dirname($test_database_path) ) {
+    mkdir( dirname($test_database_path) ) or die "can't create the data directory for groonga";
 }
 
 `$groonga_path -n $test_database_path quit`;
@@ -55,6 +61,9 @@ $g->call(
         { _key  => "http://example.com/jpn",
           title => "日本語を含むレコード",
         },
+        { _key  => "http://example.com/swz",
+          title => "test record containing backquote` character.",
+        }
     );
 
     my $result = $g->call(
@@ -63,7 +72,7 @@ $g->call(
             values => \@data,
         }
     )->recv;
-    is( $result->body, 3 );
+    is( $result->body, 4 );
 
     $result = $g->call( select => { table => "Site" } )->recv;
 
@@ -81,6 +90,11 @@ $g->call(
             { _id   => 3,
               _key  => "http://example.com/jpn",
               title => "日本語を含むレコード",
+            },
+            { 
+              _id   => 4,
+              _key  => "http://example.com/swz",
+              title => "test record containing backquote` character.",
             },
         ]
     );
